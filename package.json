@@ -1,8 +1,14 @@
 {
   "name": "pi-bb-threads",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pi tools for spawning and supervising BB child threads.",
-  "keywords": ["pi-package", "pi-extension", "bb", "subagents", "threads"],
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "bb",
+    "subagents",
+    "threads"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,13 +19,20 @@
   },
   "homepage": "https://github.com/mattwynne/pi-bb-threads#readme",
   "type": "module",
-  "files": ["extensions", "src", "README.md", "LICENSE"],
+  "files": [
+    "extensions",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "tsx --test test/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "pi": {
-    "extensions": ["./extensions/bb-threads.ts"]
+    "extensions": [
+      "./extensions/bb-threads.ts"
+    ]
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",

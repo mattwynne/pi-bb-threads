@@ -5,7 +5,7 @@ export const MAX_TOOL_OUTPUT_BYTES = 32 * 1024;
 
 const THREAD_ID_PATTERN = /^thr_[a-z0-9]+$/i;
 
-export type WorkspaceKind = "worktree" | "personal";
+export type WorkspaceKind = "inherit" | "worktree" | "personal";
 
 export interface SpawnOptions {
   projectId: string;
@@ -34,8 +34,8 @@ export function assertNonEmptyText(value: unknown, label: string, maxLength: num
 }
 
 export function assertWorkspace(value: unknown): asserts value is WorkspaceKind {
-  if (value !== "worktree" && value !== "personal") {
-    throw new Error("workspace must be either worktree or personal.");
+  if (value !== "inherit" && value !== "worktree" && value !== "personal") {
+    throw new Error("workspace must be inherit, worktree, or personal.");
   }
 }
 
@@ -55,10 +55,9 @@ export function buildSpawnArgs(options: SpawnOptions): string[] {
     options.prompt,
     "--visibility",
     "hidden",
-    "--new-environment",
-    options.workspace,
   ];
 
+  if (options.workspace !== "inherit") args.push("--new-environment", options.workspace);
   if (options.title) args.push("--title", options.title);
   args.push("--json");
   return args;

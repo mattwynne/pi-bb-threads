@@ -110,26 +110,26 @@ function childLink(threadId: string) {
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", (event) => ({
-    systemPrompt: `${event.systemPrompt}\n\n## BB child-thread delegation\nWhen the user asks to dispatch, delegate to, or use a subagent, use the bb_spawn_child tool rather than Pi's Agent tool. BB children are visible and controllable in BB. Use workspace=worktree for any code-changing task; use personal only for explicitly non-code work. Use bb_wait_child before bb_child_output, and use bb_tell_child to steer a child.`,
+    systemPrompt: `${event.systemPrompt}\n\n## BB child-thread delegation\nWhen the user asks to dispatch, delegate to, or use a subagent, use the bb_spawn_child tool rather than Pi's Agent tool. BB children are visible and controllable in BB. Child parenting and workspace selection are independent: inherit the parent workspace unless isolation is requested; use workspace=worktree for any code-changing task; use personal only for explicitly non-code work. Use bb_wait_child before bb_child_output, and use bb_tell_child to steer a child.`,
   }));
 
   pi.registerTool({
     name: "bb_spawn_child",
     label: "Spawn BB Child",
-    description: "Spawn a visible, hidden BB child thread parented to this thread. Defaults to an isolated worktree.",
+    description: "Spawn a hidden BB child thread parented to this thread. By default it inherits the parent workspace.",
     promptSnippet: "Spawn a BB-managed child thread for delegated work",
     promptGuidelines: [
       "Use bb_spawn_child, not Pi's Agent tool, when the user asks for a subagent or delegation.",
-      "Use bb_spawn_child with workspace=worktree for any task that can change code or files.",
+      "Use bb_spawn_child with workspace=worktree for any task that can change code or files; otherwise let it inherit the parent workspace.",
     ],
     parameters: Type.Object({
       prompt: Type.String({ minLength: 1, maxLength: MAX_PROMPT_LENGTH, description: "Complete delegated task and success criteria." }),
       title: Type.Optional(Type.String({ minLength: 1, maxLength: MAX_TITLE_LENGTH, description: "Short child-thread title." })),
-      workspace: Type.Optional(StringEnum(["worktree", "personal"] as const, { description: "worktree isolates code changes; personal is only for non-code work." })),
+      workspace: Type.Optional(StringEnum(["inherit", "worktree", "personal"] as const, { description: "inherit (default) reuses the parent workspace; worktree isolates code changes; personal is only for non-code work." })),
     }),
     async execute(_toolCallId, params, signal) {
       const { projectId } = requireBbContext();
-      const workspace: WorkspaceKind = params.workspace ?? (projectId === "proj_personal" ? "personal" : "worktree");
+      const workspace: WorkspaceKind = params.workspace ?? "inherit";
       const result = await runBb(buildSpawnArgs({ projectId, prompt: params.prompt, title: params.title, workspace }), signal);
       const threadId = findThreadId(parseJson(result.stdout, "bb thread spawn"));
       if (!threadId) throw new Error(`bb thread spawn succeeded but returned no thread ID: ${truncateUtf8(result.stdout, 2_000)}`);

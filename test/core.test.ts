@@ -16,7 +16,7 @@ test("recognizes only BB thread identifiers", () => {
   assert.throws(() => assertThreadId("not-a-thread"), /BB thread ID/);
 });
 
-test("builds a hidden worktree child spawn argv", () => {
+test("builds a hidden worktree child spawn argv when isolation is requested", () => {
   assert.deepEqual(buildSpawnArgs({
     projectId: "proj_example",
     prompt: "Audit the auth flow.",
@@ -26,6 +26,17 @@ test("builds a hidden worktree child spawn argv", () => {
     "thread", "spawn", "--project", "proj_example", "--parent-self",
     "--prompt", "Audit the auth flow.", "--visibility", "hidden",
     "--new-environment", "worktree", "--title", "Auth audit", "--json", 
+  ]);
+});
+
+test("inherits the parent workspace by omitting an environment choice", () => {
+  assert.deepEqual(buildSpawnArgs({
+    projectId: "proj_example",
+    prompt: "Inspect the test failure.",
+    workspace: "inherit",
+  }), [
+    "thread", "spawn", "--project", "proj_example", "--parent-self",
+    "--prompt", "Inspect the test failure.", "--visibility", "hidden", "--json",
   ]);
 });
 

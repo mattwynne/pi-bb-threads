@@ -24,7 +24,7 @@ Requirements:
 - Pi 0.85 or later
 - The `bb` CLI on `PATH`
 - A Pi session running as a BB thread (so `BB_THREAD_ID` and `BB_PROJECT_ID` are set)
-- A Git project with BB's Worktree environment provider enabled for the default mode
+- BB's Worktree environment provider enabled when you want an isolated code-changing child
 
 Install from GitHub:
 
@@ -46,7 +46,7 @@ Ask normally:
 
 > Dispatch a subagent to investigate the failing test. Do not change code.
 
-Pi should call `bb_spawn_child`. In a Git-backed BB project, the default is `workspace: "worktree"`, which gives a code-changing task a dedicated Git worktree. In BB's personal project the default is `workspace: "personal"`; Pi can also select that explicitly for non-code research.
+Pi should call `bb_spawn_child`. It defaults to `workspace: "inherit"`, so the child runs in the same workspace as its parent. Parent/child ownership and workspace selection are independent. For a code-changing task, Pi must explicitly select `workspace: "worktree"` to give the child a dedicated Git worktree. For explicitly non-code research, it can select `workspace: "personal"`.
 
 A typical parent flow is:
 
@@ -62,7 +62,7 @@ Each non-spawn operation verifies that the target is a direct child of the curre
 - The extension never passes user text through a shell: it invokes `bb` with an argument array.
 - Children are always hidden by default to keep the sidebar tidy, but remain visible under their parent and addressable by ID.
 - BB posts child-completion notices to the parent. This is useful for a small number of children, but can add context noise in large fan-outs.
-- A worktree cannot be created for a personal/non-Git BB project. Use `workspace: "personal"` only for non-code work, or run the parent in a Git-backed project.
+- A worktree cannot be created for a personal/non-Git BB project. Use `workspace: "personal"` only for non-code work, or run the parent in a Git-backed project. Inherited workspaces should not be used concurrently by children that can edit the same files.
 - This package steers Pi away from its `Agent` tool but does not disable it globally. That preserves Pi-native delegation for cases where BB is unavailable.
 
 ## Development
