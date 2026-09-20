@@ -105,8 +105,8 @@ async function assertChildThread(threadId: string, signal?: AbortSignal) {
   }
 }
 
-function childLink(threadId: string) {
-  return `[${threadId}](bb://thread/${threadId})`;
+function childReference(threadId: string) {
+  return `\`${threadId}\``;
 }
 
 export default function (pi: ExtensionAPI) {
@@ -131,7 +131,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "spawn_child",
     label: "Spawn BB Child",
-    description: "Spawn a hidden BB child thread parented to this thread. By default it inherits the parent workspace.",
+    description: "Spawn a BB child thread parented to this thread. By default it inherits the parent workspace.",
     promptSnippet: "Spawn a BB-managed child thread for delegated work",
     promptGuidelines: [
       "Use spawn_child, not Pi's Agent tool, when the user asks for a subagent or delegation.",
@@ -150,7 +150,7 @@ export default function (pi: ExtensionAPI) {
       if (!threadId) throw new Error(`bb thread spawn succeeded but returned no thread ID: ${truncateUtf8(result.stdout, 2_000)}`);
 
       return {
-        content: [{ type: "text", text: `Spawned BB child ${childLink(threadId)} in a ${workspace} environment.` }],
+        content: [{ type: "text", text: `Spawned BB child ${childReference(threadId)} in a ${workspace} environment. It is visible beneath this thread in the BB sidebar.` }],
         details: { threadId, workspace },
       };
     },
@@ -172,7 +172,7 @@ export default function (pi: ExtensionAPI) {
       const timeoutSeconds = params.timeoutSeconds ?? MAX_WAIT_SECONDS;
       const result = await runBb(["thread", "wait", params.threadId, "--status", status, "--timeout", String(timeoutSeconds), "--json"], signal);
       return {
-        content: [{ type: "text", text: `Child ${childLink(params.threadId)} reached ${status}.\n\n${renderResult(result)}` }],
+        content: [{ type: "text", text: `Child ${childReference(params.threadId)} reached ${status}.\n\n${renderResult(result)}` }],
         details: { threadId: params.threadId, status },
       };
     },
@@ -188,7 +188,7 @@ export default function (pi: ExtensionAPI) {
       await assertChildThread(params.threadId, signal);
       const result = await runBb(["thread", "output", params.threadId], signal);
       return {
-        content: [{ type: "text", text: `Output from ${childLink(params.threadId)}:\n\n${truncateUtf8(result.stdout) || "(no final output yet)"}` }],
+        content: [{ type: "text", text: `Output from ${childReference(params.threadId)}:\n\n${truncateUtf8(result.stdout) || "(no final output yet)"}` }],
         details: { threadId: params.threadId },
       };
     },
@@ -209,7 +209,7 @@ export default function (pi: ExtensionAPI) {
       await assertChildThread(params.threadId, signal);
       const result = await runBb(["thread", "tell", params.threadId, params.message, "--mode", params.mode ?? "steer", "--json"], signal);
       return {
-        content: [{ type: "text", text: `Sent follow-up to ${childLink(params.threadId)}.\n\n${renderResult(result)}` }],
+        content: [{ type: "text", text: `Sent follow-up to ${childReference(params.threadId)}.\n\n${renderResult(result)}` }],
         details: { threadId: params.threadId, mode: params.mode ?? "steer" },
       };
     },

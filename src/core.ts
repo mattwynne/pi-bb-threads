@@ -57,8 +57,6 @@ export function buildSpawnArgs(options: SpawnOptions): string[] {
     "--parent-self",
     "--prompt",
     options.prompt,
-    "--visibility",
-    "hidden",
   ];
 
   if (options.workspace !== "inherit") args.push("--new-environment", options.workspace);

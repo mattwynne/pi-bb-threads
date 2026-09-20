@@ -23,7 +23,7 @@ test("only enables BB behavior for a BB thread context", () => {
   assert.equal(isBbThreadContext("thr_abc123", ""), false);
 });
 
-test("builds a hidden worktree child spawn argv when isolation is requested", () => {
+test("builds a visible worktree child spawn argv when isolation is requested", () => {
   assert.deepEqual(buildSpawnArgs({
     projectId: "proj_example",
     prompt: "Audit the auth flow.",
@@ -31,8 +31,8 @@ test("builds a hidden worktree child spawn argv when isolation is requested", ()
     workspace: "worktree",
   }), [
     "thread", "spawn", "--project", "proj_example", "--parent-self",
-    "--prompt", "Audit the auth flow.", "--visibility", "hidden",
-    "--new-environment", "worktree", "--title", "Auth audit", "--json", 
+    "--prompt", "Audit the auth flow.", "--new-environment", "worktree",
+    "--title", "Auth audit", "--json",
   ]);
 });
 
@@ -43,7 +43,7 @@ test("inherits the parent workspace by omitting an environment choice", () => {
     workspace: "inherit",
   }), [
     "thread", "spawn", "--project", "proj_example", "--parent-self",
-    "--prompt", "Inspect the test failure.", "--visibility", "hidden", "--json",
+    "--prompt", "Inspect the test failure.", "--json",
   ]);
 });
 

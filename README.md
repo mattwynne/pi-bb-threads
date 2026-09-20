@@ -4,7 +4,7 @@ A [Pi](https://pi.dev) extension that delegates through durable [BB](https://get
 
 It gives Pi four native tools:
 
-- `spawn_child` — creates a hidden child thread with `bb thread spawn --parent-self`.
+- `spawn_child` — creates a visible child thread with `bb thread spawn --parent-self`.
 - `wait_for_child` — waits for a child to become idle or error.
 - `get_child_output` — reads a settled child's final output.
 - `tell_child` — steers or queues a follow-up for a child.
@@ -60,7 +60,7 @@ Each non-spawn operation verifies that the target is a direct child of the curre
 ## Safety and limitations
 
 - The extension never passes user text through a shell: it invokes `bb` with an argument array.
-- Children are always hidden by default to keep the sidebar tidy, but remain visible under their parent and addressable by ID.
+- Children are visible beneath their parent in the BB sidebar and are addressable by ID.
 - BB posts child-completion notices to the parent. This is useful for a small number of children, but can add context noise in large fan-outs.
 - A worktree cannot be created for a personal/non-Git BB project. Use `workspace: "personal"` only for non-code work, or run the parent in a Git-backed project. Inherited workspaces should not be used concurrently by children that can edit the same files.
 - Inside a BB thread, the extension blocks Pi's `Agent` tool so delegated work uses a BB child thread. Outside BB, the extension is inert and does not affect Pi-native delegation.
