@@ -110,17 +110,17 @@ function childLink(threadId: string) {
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", (event) => ({
-    systemPrompt: `${event.systemPrompt}\n\n## BB child-thread delegation\nWhen the user asks to dispatch, delegate to, or use a subagent, use the bb_spawn_child tool rather than Pi's Agent tool. BB children are visible and controllable in BB. Child parenting and workspace selection are independent: inherit the parent workspace unless isolation is requested; use workspace=worktree for any code-changing task; use personal only for explicitly non-code work. Use bb_wait_child before bb_child_output, and use bb_tell_child to steer a child.`,
+    systemPrompt: `${event.systemPrompt}\n\n## BB child-thread delegation\nWhen the user asks to dispatch, delegate to, or use a subagent, use the spawn_child tool rather than Pi's Agent tool. BB children are visible and controllable in BB. Child parenting and workspace selection are independent: inherit the parent workspace unless isolation is requested; use workspace=worktree for any code-changing task; use personal only for explicitly non-code work. Use wait_for_child before get_child_output, and use tell_child to steer a child.`,
   }));
 
   pi.registerTool({
-    name: "bb_spawn_child",
+    name: "spawn_child",
     label: "Spawn BB Child",
     description: "Spawn a hidden BB child thread parented to this thread. By default it inherits the parent workspace.",
     promptSnippet: "Spawn a BB-managed child thread for delegated work",
     promptGuidelines: [
-      "Use bb_spawn_child, not Pi's Agent tool, when the user asks for a subagent or delegation.",
-      "Use bb_spawn_child with workspace=worktree for any task that can change code or files; otherwise let it inherit the parent workspace.",
+      "Use spawn_child, not Pi's Agent tool, when the user asks for a subagent or delegation.",
+      "Use spawn_child with workspace=worktree for any task that can change code or files; otherwise let it inherit the parent workspace.",
     ],
     parameters: Type.Object({
       prompt: Type.String({ minLength: 1, maxLength: MAX_PROMPT_LENGTH, description: "Complete delegated task and success criteria." }),
@@ -142,7 +142,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.registerTool({
-    name: "bb_wait_child",
+    name: "wait_for_child",
     label: "Wait for BB Child",
     description: "Wait for one of this thread's BB children to become idle or error.",
     parameters: Type.Object({
@@ -164,7 +164,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.registerTool({
-    name: "bb_child_output",
+    name: "get_child_output",
     label: "Get BB Child Output",
     description: "Retrieve final output from one of this thread's BB children after it settles.",
     parameters: Type.Object({ threadId: Type.String({ minLength: 5, maxLength: 80 }) }),
@@ -180,7 +180,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.registerTool({
-    name: "bb_tell_child",
+    name: "tell_child",
     label: "Tell BB Child",
     description: "Steer or queue a follow-up message for one of this thread's BB children.",
     parameters: Type.Object({

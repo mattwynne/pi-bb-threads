@@ -4,12 +4,12 @@ A [Pi](https://pi.dev) extension that delegates through durable [BB](https://get
 
 It gives Pi four native tools:
 
-- `bb_spawn_child` — creates a hidden child thread with `bb thread spawn --parent-self`.
-- `bb_wait_child` — waits for a child to become idle or error.
-- `bb_child_output` — reads a settled child's final output.
-- `bb_tell_child` — steers or queues a follow-up for a child.
+- `spawn_child` — creates a hidden child thread with `bb thread spawn --parent-self`.
+- `wait_for_child` — waits for a child to become idle or error.
+- `get_child_output` — reads a settled child's final output.
+- `tell_child` — steers or queues a follow-up for a child.
 
-The extension adds a delegation policy to Pi's prompt: when a user asks for a subagent, use `bb_spawn_child`, not Pi's built-in `Agent` tool.
+The extension adds a delegation policy to Pi's prompt: when a user asks for a subagent, use `spawn_child`, not Pi's built-in `Agent` tool.
 
 ## Why
 
@@ -46,14 +46,14 @@ Ask normally:
 
 > Dispatch a subagent to investigate the failing test. Do not change code.
 
-Pi should call `bb_spawn_child`. It defaults to `workspace: "inherit"`, so the child runs in the same workspace as its parent. Parent/child ownership and workspace selection are independent. For a code-changing task, Pi must explicitly select `workspace: "worktree"` to give the child a dedicated Git worktree. For explicitly non-code research, it can select `workspace: "personal"`.
+Pi should call `spawn_child`. It defaults to `workspace: "inherit"`, so the child runs in the same workspace as its parent. Parent/child ownership and workspace selection are independent. For a code-changing task, Pi must explicitly select `workspace: "worktree"` to give the child a dedicated Git worktree. For explicitly non-code research, it can select `workspace: "personal"`.
 
 A typical parent flow is:
 
-1. `bb_spawn_child`
-2. `bb_wait_child`
-3. `bb_child_output`
-4. optionally `bb_tell_child` to request a correction or follow-up
+1. `spawn_child`
+2. `wait_for_child`
+3. `get_child_output`
+4. optionally `tell_child` to request a correction or follow-up
 
 Each non-spawn operation verifies that the target is a direct child of the current BB thread. Tool output is UTF-8-safe and bounded to 32 KiB before it reaches the parent model.
 

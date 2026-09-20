@@ -21,11 +21,11 @@ test("registers the four BB child-thread tools and delegation guidance", async (
   } as never);
 
   assert.deepEqual(registeredTools.map((tool) => tool.name), [
-    "bb_spawn_child",
-    "bb_wait_child",
-    "bb_child_output",
-    "bb_tell_child",
+    "spawn_child",
+    "wait_for_child",
+    "get_child_output",
+    "tell_child",
   ]);
-  assert.match(beforeAgentStart?.({ systemPrompt: "base" }).systemPrompt ?? "", /bb_spawn_child/);
+  assert.match(beforeAgentStart?.({ systemPrompt: "base" }).systemPrompt ?? "", /spawn_child/);
   assert.equal(typeof registeredTools[0].execute, "function");
 });
