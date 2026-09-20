@@ -1,6 +1,6 @@
 {
   "name": "pi-bb-threads",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Pi tools for spawning and supervising BB child threads.",
   "keywords": [
     "pi-package",

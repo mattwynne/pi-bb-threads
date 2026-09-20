@@ -5,6 +5,7 @@ import {
   assertThreadId,
   buildSpawnArgs,
   findThreadId,
+  isBbThreadContext,
   isThreadId,
   truncateUtf8,
 } from "../src/core.js";
@@ -14,6 +15,12 @@ test("recognizes only BB thread identifiers", () => {
   assert.equal(isThreadId("proj_abc123"), false);
   assert.equal(isThreadId("thr_bad-id"), false);
   assert.throws(() => assertThreadId("not-a-thread"), /BB thread ID/);
+});
+
+test("only enables BB behavior for a BB thread context", () => {
+  assert.equal(isBbThreadContext("thr_abc123", "proj_example"), true);
+  assert.equal(isBbThreadContext(undefined, "proj_example"), false);
+  assert.equal(isBbThreadContext("thr_abc123", ""), false);
 });
 
 test("builds a hidden worktree child spawn argv when isolation is requested", () => {

@@ -18,6 +18,10 @@ export function isThreadId(value: unknown): value is string {
   return typeof value === "string" && THREAD_ID_PATTERN.test(value);
 }
 
+export function isBbThreadContext(threadId: unknown, projectId: unknown): boolean {
+  return isThreadId(threadId) && typeof projectId === "string" && projectId.trim().length > 0;
+}
+
 export function assertThreadId(value: unknown, label = "threadId"): asserts value is string {
   if (!isThreadId(value)) {
     throw new Error(`${label} must be a BB thread ID such as thr_abc123.`);

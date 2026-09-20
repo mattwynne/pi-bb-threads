@@ -10,6 +10,7 @@ import {
   assertThreadId,
   buildSpawnArgs,
   findThreadId,
+  isBbThreadContext,
   truncateUtf8,
   type WorkspaceKind,
 } from "../src/core.js";
@@ -109,6 +110,20 @@ function childLink(threadId: string) {
 }
 
 export default function (pi: ExtensionAPI) {
+  // A globally installed Pi package is available to every Pi process. Only BB
+  // supplies both variables, so outside BB this extension deliberately has no
+  // tools, policy, or interception behavior.
+  if (!isBbThreadContext(BB_THREAD_ID, BB_PROJECT_ID)) return;
+
+  pi.on("tool_call", (event) => {
+    if (event.toolName === "Agent") {
+      return {
+        block: true,
+        reason: "This Pi session runs inside BB. Use spawn_child for a BB-managed child thread instead of Agent.",
+      };
+    }
+  });
+
   pi.on("before_agent_start", (event) => ({
     systemPrompt: `${event.systemPrompt}\n\n## BB child-thread delegation\nWhen the user asks to dispatch, delegate to, or use a subagent, use the spawn_child tool rather than Pi's Agent tool. BB children are visible and controllable in BB. Child parenting and workspace selection are independent: inherit the parent workspace unless isolation is requested; use workspace=worktree for any code-changing task; use personal only for explicitly non-code work. Use wait_for_child before get_child_output, and use tell_child to steer a child.`,
   }));

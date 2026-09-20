@@ -32,7 +32,7 @@ Install from GitHub:
 pi install git:github.com/mattwynne/pi-bb-threads@v0.1.0
 ```
 
-Restart Pi or run `/reload` in an existing session.
+Restart Pi or run `/reload` in an existing session. The package is inert unless Pi is running in a BB thread with both `BB_THREAD_ID` and `BB_PROJECT_ID`; outside BB it registers no tools or policy.
 
 To develop it locally:
 
@@ -63,7 +63,7 @@ Each non-spawn operation verifies that the target is a direct child of the curre
 - Children are always hidden by default to keep the sidebar tidy, but remain visible under their parent and addressable by ID.
 - BB posts child-completion notices to the parent. This is useful for a small number of children, but can add context noise in large fan-outs.
 - A worktree cannot be created for a personal/non-Git BB project. Use `workspace: "personal"` only for non-code work, or run the parent in a Git-backed project. Inherited workspaces should not be used concurrently by children that can edit the same files.
-- This package steers Pi away from its `Agent` tool but does not disable it globally. That preserves Pi-native delegation for cases where BB is unavailable.
+- Inside a BB thread, the extension blocks Pi's `Agent` tool so delegated work uses a BB child thread. Outside BB, the extension is inert and does not affect Pi-native delegation.
 
 ## Development
 
